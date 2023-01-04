@@ -90,11 +90,8 @@ const addBookSelf = (req, res) => {
         message: 'Buku tidak berhasil ditambahkan'
     });
        response.code(500);
-       
-       return response(error, message);
+       return response(error, res);
   }
-  
-
 };
 
 const getAllBookSelf = (req, res) => {
@@ -128,7 +125,7 @@ const getAllBookSelf = (req, res) => {
       };
     }
   
-    if (reading === '0') {
+    if (reading !== undefined ) {
       return {
         status: 'success',
         data: {
@@ -158,7 +155,8 @@ const getAllBookSelf = (req, res) => {
       };
     }
   
-    if (finished === '0') {
+  
+    if (finished  !== undefined ) {
       return {
         status: 'success',
         data: {
@@ -187,11 +185,14 @@ const getAllBookSelf = (req, res) => {
         },
       };
     }
-  
+
     response.code(200);
     return response;
+
     
-  } catch (error) {
+    
+  }
+  catch (error) {
      const response = res.response({
       status: 'fail',
       message: 'Buku tidak ditemukan',
@@ -206,23 +207,25 @@ const getBookSelfId = (req, res) => {
   try {
     const { id } = req.params;
   
-    const bookShelf = books.filter((bookShelf) => bookShelf.id === id)[0];
+    const book = books.filter((bokShelf) => bokShelf.id === id)[0];
   
-    if (bookShelf !== undefined) {
+    if (book !== undefined) {
       return {
         error: false,
         status: 'success',
         data: {
-          books,
+          book,
         },
       }
     };
+
+
     const response = res.response({
-      error: false,
-      status: 'success',
-      message: 'Buku berhsail ditemukan',
+      error: true,
+      status: 'fail',
+      message: 'Buku tidak ditemukan',
     });
-    response.code(200);
+    response.code(404);
     return response;
   } catch (error) {
      const response = res.response({
@@ -248,13 +251,12 @@ const updatedBookSelfId = (req, res) => {
   
   const updatedAt = new Date().toISOString();
   
-  const construct = books.findIndex((book) => book.id === id);
   
-  if (!name) {
+  if (name === undefined) {
     const response = res.response({
       error: true,
       status: 'fail',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku',
+      message: 'Gagal memperbarui buku. Mohon isi nama buku',
     });
     response.code(400);
     return response;
@@ -264,15 +266,17 @@ const updatedBookSelfId = (req, res) => {
     const response = res.response({
       error: true,
       status: 'fail',
-      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
     });
     response.code(400);
     return response;
-  }
+    }
+    
+    const indexing = books.findIndex((book) => book.id === id);
   
-  if (construct !== -1) {
-    books[construct] = {
-      ...books[construct],
+  if (indexing !== -1) {
+    books[indexing] = {
+      ...books[indexing],
       name,
       year,
       author,
@@ -292,8 +296,15 @@ const updatedBookSelfId = (req, res) => {
     });
     response.code(200);
     return response;
-        
   }
+  const response = res.response({
+    error: true,  
+    status: 'fail',
+    message: 'Gagal memperbarui buku. Id tidak ditemukan'
+  });
+    response.code(404);
+    return response;
+    
   } catch (error) {
     const response = res.response({
     error: true,  
@@ -321,9 +332,16 @@ const deletedBookSelfId = (req, res) => {
         status: 'success',
         message: 'Buku berhasil dihapus',
       });
-      response.code(202);
+      response.code(200);
       return response;
-    }
+      }
+       const response = res.response({
+      error: true,
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan"',
+    });
+    response.code(404);
+    return response;
   
     } catch (error) {
       const response = res.response({

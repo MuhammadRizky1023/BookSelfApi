@@ -1,4 +1,4 @@
-const { addBookSelf, getAllBookSelf, getBookSelfId,  updatedBookSelfId, deletedBookSelfId} = require("../Handler/BookSelfHandler");
+const { addBookSelf, getAllBookSelf, getBookSelfId,  updatedBookSelfId, deletedBookSelfId} = require("../Handler/BookShelfHandler");
 
 const routes = [
   {
